@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Checkout</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body { font-family: Arial; padding: 50px; }
+        #payment-element { margin-top: 20px; }
+        button { margin-top: 20px; padding:10px 20px; font-size:18px; }
+    </style>
+</head>
+<body>
+
+<h1>Payment Checkout</h1>
+<div id="payment-element"></div>
+<button id="payBtn">Pay Now</button>
+
+<script>
+(async () => {
+    const stripeKey = await fetch("/api/config").then(r=>r.json());
+    const stripe = Stripe(stripeKey.publishableKey);
+
+    const params = new URLSearchParams(window.location.search);
+    const clientSecret = params.get("payment_intent_client_secret");
+
+    if (!clientSecret) {
+        document.body.innerHTML = "<h2>Payment failed — No clientSecret found</h2>";
+        return;
+    }
+
+    const elements = stripe.elements({ clientSecret });
+    const paymentElement = elements.create("payment");
+    paymentElement.mount("#payment-element");
+    
+    document.getElementById("payBtn").onclick = async () => {
+        const result = await stripe.confirmPayment({ 
+            elements, 
+            confirmParams: {
+                return_url: window.location.origin + "/success.html"
+            }
+        });
+
+        if (result.error) alert(result.error.message);
+    };
+})();
+</script>
+</body>
+</html>

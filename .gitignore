@@ -1,0 +1,13 @@
+node_modules/
+.env
+.env.local
+
+logs
+*.log
+
+.DS_Store
+Thumbs.db
+
+*.key
+messages.txt
+orders.txt
