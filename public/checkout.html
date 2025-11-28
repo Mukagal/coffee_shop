@@ -1,48 +1,114 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Checkout</title>
-    <script src="https://js.stripe.com/v3/"></script>
-    <style>
-        body { font-family: Arial; padding: 50px; }
-        #payment-element { margin-top: 20px; }
-        button { margin-top: 20px; padding:10px 20px; font-size:18px; }
-    </style>
-</head>
-<body>
+    <head>
+        <meta charset="utf-8">
+        <title>Checkout | Padişah Kahvehanesi</title>
+        <script src="https://js.stripe.com/v3/"></script>
 
-<h1>Payment Checkout</h1>
-<div id="payment-element"></div>
-<button id="payBtn">Pay Now</button>
-
-<script>
-(async () => {
-    const stripeKey = await fetch("/api/config").then(r=>r.json());
-    const stripe = Stripe(stripeKey.publishableKey);
-
-    const params = new URLSearchParams(window.location.search);
-    const clientSecret = params.get("payment_intent_client_secret");
-
-    if (!clientSecret) {
-        document.body.innerHTML = "<h2>Payment failed — No clientSecret found</h2>";
-        return;
-    }
-
-    const elements = stripe.elements({ clientSecret });
-    const paymentElement = elements.create("payment");
-    paymentElement.mount("#payment-element");
-    
-    document.getElementById("payBtn").onclick = async () => {
-        const result = await stripe.confirmPayment({ 
-            elements, 
-            confirmParams: {
-                return_url: window.location.origin + "/success.html"
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: "Poppins", sans-serif;
+                background: #faf4e6;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
             }
-        });
 
-        if (result.error) alert(result.error.message);
-    };
-})();
-</script>
-</body>
+            .checkout-box {
+                background: white;
+                width: 95%;
+                max-width: 620px;      
+                padding: 50px;         
+                border-radius: 22px;   
+                box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+                text-align: center;
+                animation: fadeIn 0.6s ease;
+            }
+
+            h1 {
+                font-size: 32px;     
+                margin-bottom: 18px;
+                color: #5b3924;
+                font-weight: 800;
+            }
+
+            #payment-element {
+                margin-top: 20px;
+            }
+
+            button {
+                width: 100%;
+                padding: 18px;
+                background: #6f4e37;
+                color: white;
+                font-size: 20px;
+                border: none;
+                border-radius: 12px;
+                cursor: pointer;
+                margin-top: 30px;
+                transition: 0.25s;
+            }
+
+            button:hover {
+                background: #513922;
+                transform: translateY(-2px);
+            }
+
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px);}
+                to   { opacity: 1; transform: translateY(0);}
+            }
+
+            @media(max-width: 500px) {
+                .checkout-box {
+                    padding: 35px;
+                    max-width: 95%;
+                }
+                h1 { font-size: 26px; }
+                button {
+                    font-size: 18px;
+                    padding: 15px;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+    <div class="checkout-box">
+        <h1>Secure Checkout</h1>
+        <p style="color:#774c2a;">Enter payment details to complete your order</p>
+        
+        <div id="payment-element"></div>
+        <button id="payBtn">Pay Now 💳</button>
+    </div>
+
+    <script>
+    (async () => {
+        const stripeKey = await fetch("/api/config").then(r=>r.json());
+        const stripe = Stripe(stripeKey.publishableKey);
+
+        const params = new URLSearchParams(window.location.search);
+        const clientSecret = params.get("payment_intent_client_secret");
+
+        if (!clientSecret) {
+            document.body.innerHTML = "<h2 style='text-align:center;color:#6a4028;'>Payment Failed — Missing Token ❌</h2>";
+            return;
+        }
+
+        const elements = stripe.elements({ clientSecret });
+        elements.create("payment").mount("#payment-element");
+        
+        document.getElementById("payBtn").onclick = async () => {
+            await stripe.confirmPayment({ 
+                elements, 
+                confirmParams: { return_url: window.location.origin + "/success.html" }
+            });
+        };
+    })();
+    </script>
+
+    </body>
 </html>

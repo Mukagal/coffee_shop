@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brew Haven - Artisan Coffee Shop</title>
+    <title>Padişah Kahvehanesi - Artisan Coffee Shop</title>
     <link rel="stylesheet" href="style.css">
     <script></script>
 </head>
 <body>
     <header>
         <nav>
-            <div class="logo">☕ Brew Haven</div>
+            <div class="logo">Padişah Kahvehanesi</div>
             <button class="menu-toggle" onclick="toggleMenu()">☰</button>
             <ul class="nav-links" id="navLinks">
                 <li><a href="#home">Home</a></li>
@@ -24,7 +24,7 @@
 
     <section class="hero" id="home">
         <div class="hero-content">
-            <h1>Welcome to Brew Haven</h1>
+            <h1>Welcome to Padişah Kahvehanesi</h1>
             <p>Where Every Cup Tells a Story</p>
             <a href="#menu" class="btn">Explore Our Menu</a>
         </div>
@@ -35,12 +35,12 @@
         <div class="about-content">
             <div class="about-text">
                 <h3>Crafting Perfect Coffee Since 2015</h3>
-                <p>At Brew Haven, we believe that coffee is more than just a beverage – it's an experience. Our passionate baristas carefully select and roast the finest beans from around the world to bring you exceptional coffee every single day.</p>
+                <p>At Padişah Kahvehanesi, we believe that coffee is more than just a beverage – it's an experience. Our passionate baristas carefully select and roast the finest beans from around the world to bring you exceptional coffee every single day.</p>
                 <p>We're committed to sustainability, quality, and creating a warm, welcoming space where our community can gather, connect, and enjoy the perfect cup of coffee.</p>
-                <p>Visit us and discover why coffee lovers keep coming back to Brew Haven.</p>
+                <p>Visit us and discover why coffee lovers keep coming back to Padişah Kahvehanesi.</p>
             </div>
             <div class="about-image">
-                <img src="/public/images/gif.webp" alt="">
+                <img src="/images/gif.webp" alt="">
             </div>
         </div>
     </section>
@@ -137,22 +137,22 @@
         <h2 class="section-title">Gallery</h2>
         <div class="gallery-grid">
             <div class="gallery-item">
-                <img src="/public/images/espresso.webp" alt="">
+                <img src="/images/espresso.webp" alt="">
             </div>
             <div class="gallery-item">
-                <img src="/public/images/cappuchino.jpg" alt="">
+                <img src="/images/cappuchino.jpg" alt="">
             </div>
             <div class="gallery-item">
-                <img src="/public/images/caramel latte.jpg" alt="">
+                <img src="/images/caramel latte.jpg" alt="">
             </div>
             <div class="gallery-item">
-                <img src="/public/images/cold brew.jpg" alt="">
+                <img src="/images/cold brew.jpg" alt="">
             </div>
             <div class="gallery-item">
-                <img src="/public/images/mocha.jpg" alt="">
+                <img src="/images/mocha.jpg" alt="">
             </div>
             <div class="gallery-item">
-                <img src="/public/images/flat white.jpg" alt="">
+                <img src="/images/flat white.jpg" alt="">
             </div>
         </div>
     </section>
@@ -216,7 +216,7 @@
             <a href="#">📷</a>
             <a href="#">🐦</a>
         </div>
-        <p>&copy; 2025 Brew Haven Coffee Shop. All rights reserved.</p>
+        <p>&copy; 2025 Padişah Kahvehanesi Coffee Shop. All rights reserved.</p>
     </footer>
 
     <script>
@@ -225,10 +225,26 @@
             navLinks.classList.toggle('active');
         }
 
-        function handleSubmit(event) {
+        async function handleSubmit(event) {
             event.preventDefault();
-            alert('Thank you for your message! We will get back to you soon.');
-            event.target.reset();
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const message = document.getElementById("message").value;
+
+            const res = await fetch("/api/contact", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, email, message })
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                alert("Message received! Thank you for contacting us.");
+                event.target.reset(); 
+            } else {
+                alert("Error: " + data.error);
+            }
         }
 
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
